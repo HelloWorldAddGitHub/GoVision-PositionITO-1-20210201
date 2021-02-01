@@ -103,8 +103,39 @@ namespace GoVision
             }
         }
 
+        /// <summary>
+        /// 提取产品轮廓
+        /// </summary>
+        /// <param name="image">输入图像</param>
+        /// <param name="contour">输出产品轮廓</param>
+        public void ExtractContourXld(HObject image, out HObject contour)
+        {
+            // Local iconic variables 
+            HObject ho_ImageMedian, ho_ImageScaled, ho_Regions, ho_RegionClosing, ho_RegionTrans;
+
+            HOperatorSet.GenEmptyObj(out contour);
+
+            HOperatorSet.ScaleImage(image, out ho_ImageScaled, 4.25, -425);
+            HOperatorSet.MedianImage(ho_ImageScaled, out ho_ImageMedian, "square", 15, "mirrored");
+            HOperatorSet.Threshold(ho_ImageMedian, out ho_Regions, 60, 255);
+            HOperatorSet.ClosingCircle(ho_Regions, out ho_RegionClosing, 19.5);
+            HOperatorSet.ShapeTrans(ho_RegionClosing, out ho_RegionTrans, "convex");
+            HOperatorSet.GenContourRegionXld(ho_RegionTrans, out contour, "border");
+        }
+
+        /// <summary>
+        /// 测量所有碳点
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
+        /// <param name="radian"></param>
         public void MeasureAll(HObject image, double row, double column, double radian)
         {
+            HObject contour;
+            ExtractContourXld(image, out contour);
+
+
             foreach (var mea in MeasureList)
             {
                 mea.ClearResult();
@@ -114,11 +145,11 @@ namespace GoVision
 
                 HTuple homMat2D;
                 HOperatorSet.HomMat2dIdentity(out homMat2D);
-                HOperatorSet.HomMat2dRotate(homMat2D, radian, row, column, out homMat2D);
+                HOperatorSet.HomMat2dRotate(homMat2D, radian - mea.ModelRadian, row, column, out homMat2D);
                 HOperatorSet.AffineTransPixel(homMat2D, rowTrans, columnTrans, out rowTrans, out columnTrans);
 
                 mea.Gen(rowTrans, columnTrans, radian);
-                mea.MeasurePos(image);
+                mea.MeasurePos(image, contour);
                 mea.Close();
             }
         }
@@ -140,7 +171,7 @@ namespace GoVision
             public double[] PosHomMat2d;
 
             public double PosRadianDiff;
-
+            public double ModelRadian;
             //测量矩形
             public double CenterRow;
 
@@ -201,6 +232,22 @@ namespace GoVision
             public double LimiteTopMin = 0.1;
             public double LimiteTopMax = 1.6;
 
+            public void Gen()
+            {
+                //生成水平方向测量矩形
+                HOperatorSet.GenMeasureRectangle2(CenterRow, CenterColumn, Radian, Width / 2, Height / 2,
+                    ImageWidth, ImageHeight, Interpolation, out Handle1);
+
+                //生成垂直方向测量矩形
+                HOperatorSet.GenMeasureRectangle2(CenterRow, CenterColumn, Radian - Math.PI / 2, Width / 2, Height / 2,
+                    ImageWidth, ImageHeight, Interpolation, out Handle2);
+
+                //生成屏幕边缘测量矩形
+                HOperatorSet.GenMeasureRectangle2(CenterRow + DisHanldeRow, CenterColumn /*+ DisHanldeColumn*/, Radian + Math.PI / 2,
+                    /*Math.Abs(DisHanldeRow * 2)*/20, Height / 2, ImageWidth, ImageHeight, Interpolation, out HandleLine);
+
+            }
+
             public void Gen(double row, double column, double radian)
             {
                 CenterRow = row;
@@ -253,39 +300,48 @@ namespace GoVision
                 roundness = new HTuple();
                 numHoles = new HTuple();
                 diameter = new HTuple();
+                region = new HObject();
 
-                HTuple absoluteHisto, relativeHisto, minThresh, maxThresh;
-                HTuple distance, sigma, /*roundness,*/ sides, row, column;
-
-                HOperatorSet.GrayHisto(image, image, out absoluteHisto, out relativeHisto);
-                HOperatorSet.HistoToThresh(relativeHisto, 8, out minThresh, out maxThresh);
-
-                HTuple threshMax = maxThresh[maxThresh.Length - 2];
-
-                for (int i = maxThresh.Length - 3; threshMax > 160 && i >= 0; i--)
+                try
                 {
-                    threshMax = maxThresh[i];
+
+                    HTuple absoluteHisto, relativeHisto, minThresh, maxThresh;
+                    HTuple distance, sigma, /*roundness,*/ sides, row, column;
+
+                    HOperatorSet.GrayHisto(image, image, out absoluteHisto, out relativeHisto);
+                    HOperatorSet.HistoToThresh(relativeHisto, 8, out minThresh, out maxThresh);
+
+                    HTuple threshMax = maxThresh[maxThresh.Length - 2];
+
+                    for (int i = maxThresh.Length - 3; threshMax > 160 && i >= 0; i--)
+                    {
+                        threshMax = maxThresh[i];
+                    }
+
+                    threshMax = threshMax.I < 140 ? 140 : threshMax.I;
+
+                    HTuple numConnected, /*numHoles,*/ row1, column1, row2, column2/*, diameter*/, area, indices;
+
+                    HOperatorSet.Threshold(image, out region, minThresh[0], threshMax);
+
+                    HObject connectedRegions;
+                    HOperatorSet.Connection(region, out connectedRegions);
+                    HOperatorSet.AreaCenter(connectedRegions, out area, out row, out column);
+
+                    HOperatorSet.TupleSortIndex(area, out indices);
+                    HOperatorSet.TupleInverse(indices, out indices);
+                    HOperatorSet.SelectObj(connectedRegions, out region, indices[0] + 1);
+
+
+                    HOperatorSet.ConnectAndHoles(region, out numConnected, out numHoles);
+                    HOperatorSet.DiameterRegion(region, out row1, out column1, out row2, out column2, out diameter);
+                    HOperatorSet.Roundness(region, out distance, out sigma, out roundness, out sides);
+                    //HOperatorSet.AreaCenter(region, out area, out row, out column);
                 }
-
-                threshMax = threshMax.I < 140 ? 140 : threshMax.I;
-
-                HTuple numConnected, /*numHoles,*/ row1, column1, row2, column2/*, diameter*/, area, indices;
-
-                HOperatorSet.Threshold(image, out region, minThresh[0], threshMax);
-
-                HObject connectedRegions;
-                HOperatorSet.Connection(region, out connectedRegions);
-                HOperatorSet.AreaCenter(connectedRegions, out area, out row, out column);
-
-                HOperatorSet.TupleSortIndex(area, out indices);
-                HOperatorSet.TupleInverse(indices, out indices);
-                HOperatorSet.SelectObj(connectedRegions, out region, indices[0] + 1);
-
-
-                HOperatorSet.ConnectAndHoles(region, out numConnected, out numHoles);
-                HOperatorSet.DiameterRegion(region, out row1, out column1, out row2, out column2, out diameter);
-                HOperatorSet.Roundness(region, out distance, out sigma, out roundness, out sides);
-                //HOperatorSet.AreaCenter(region, out area, out row, out column);
+                catch (Exception e)
+                {
+                    Log.Show($"{e}");
+                }
             }
 
             public void MeasureCircle(HObject image, double row, double column, double radian, out HTuple diameterMax, out HTuple diameterMin,
@@ -504,7 +560,8 @@ namespace GoVision
                         HOperatorSet.ReduceDomain(image, rect, out imageReduced);
                         MeasureRoundness(imageReduced, out region, out roundness, out numHoles, out diameter);
 
-                        if (roundness < 0.85 || numHoles > 0)
+                        //if (roundness < 0.85 || numHoles > 0)
+                        if (roundness < 0.9 || numHoles > 0)
                         {
                             diameterMax = 999;
                             //HOperatorSet.ConcatObj(contour, region, out contour);
@@ -513,12 +570,13 @@ namespace GoVision
                         //diameterMax = diameterMax > diameter ? diameterMax : diameter;
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    throw e;
                 }
             }
 
-            public void MeasurePos(HObject image)
+            public void MeasurePos(HObject image, HObject edgeContour)
             {
                 //记录测量数量
                 int meaCount = 0;
@@ -546,8 +604,9 @@ namespace GoVision
                     HOperatorSet.ConcatObj(LineEdge, image, out LineEdge);
                     */
 
-                    HTuple edgeRow1, edgeColumn1, edgeRow2, edgeColumn2;
-                    FindEdge(image, row, column, radian, out edgeRow1, out edgeColumn1, out edgeRow2, out edgeColumn2);
+                    //HTuple edgeRow1, edgeColumn1, edgeRow2, edgeColumn2;
+                    //FindEdge(image, row, column, radian, out edgeRow1, out edgeColumn1, out edgeRow2, out edgeColumn2);
+                    HOperatorSet.ConcatObj(LineEdge, edgeContour, out LineEdge);
 
                     //测量所有碳碳点
                     for (int i = 0; i < PinCount; i++)
@@ -566,8 +625,10 @@ namespace GoVision
                             out edgeRow, out edgeColumn, out contour);
 
                         //测量碳点到玻璃边缘的距离
-                        HTuple disTop;
-                        HOperatorSet.DistancePl(edgeRow, edgeColumn, edgeRow1, edgeColumn1, edgeRow2, edgeColumn2, out disTop);
+                        HTuple disTop, distanceMax;
+                        //HOperatorSet.DistancePl(edgeRow, edgeColumn, edgeRow1, edgeColumn1, edgeRow2, edgeColumn2, out disTop);
+                        HOperatorSet.DistancePc(edgeContour, edgeRow, edgeColumn, out disTop, out distanceMax);
+
 
                         //像素转毫米
                         double maxDiameter = Math.Round((PlatformCalibData.PixelToMm(diameterMax) + MeasureMgr.GetInstance().OffsetDia), 2);
@@ -607,8 +668,9 @@ namespace GoVision
                         meaCount++;
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    throw e;
                 }
                 finally
                 {
@@ -620,7 +682,7 @@ namespace GoVision
                 }
             }
 
-            public void FindEdge(HObject image, HTuple row, HTuple column, HTuple radian,  out HTuple edgeRow1, out HTuple edgeColumn1, out HTuple edgeRow2, out HTuple edgeColumn2)
+            public void FindEdge(HObject image, HTuple row, HTuple column, HTuple radian, out HTuple edgeRow1, out HTuple edgeColumn1, out HTuple edgeRow2, out HTuple edgeColumn2)
             {
                 HTuple homMat2D, rowTrans, columnTrans;
 

@@ -290,7 +290,7 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.splitContainer1.Location = new System.Drawing.Point(0, 406);
             this.splitContainer1.Name = "splitContainer1";
@@ -1350,12 +1350,12 @@
             131072});
             this.nudMeasureRoiPhi.Location = new System.Drawing.Point(66, 69);
             this.nudMeasureRoiPhi.Maximum = new decimal(new int[] {
-            360,
+            35999,
             0,
             0,
-            0});
+            131072});
             this.nudMeasureRoiPhi.Minimum = new decimal(new int[] {
-            360,
+            180,
             0,
             0,
             -2147483648});
@@ -1486,6 +1486,7 @@
             this.ckbSecondPos.TabIndex = 88;
             this.ckbSecondPos.Text = "启用二次定位";
             this.ckbSecondPos.UseVisualStyleBackColor = true;
+            this.ckbSecondPos.Visible = false;
             this.ckbSecondPos.CheckedChanged += new System.EventHandler(this.ckbSecondPos_CheckedChanged);
             // 
             // groupBox12
@@ -2037,7 +2038,7 @@
             // 
             // DispPyramidTrackBar
             // 
-            this.DispPyramidTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.DispPyramidTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.DispPyramidTrackBar.AutoSize = false;
             this.DispPyramidTrackBar.Enabled = false;
@@ -2078,7 +2079,7 @@
             // 
             // cmbMetric
             // 
-            this.cmbMetric.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.cmbMetric.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbMetric.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbMetric.Items.AddRange(new object[] {
@@ -2095,7 +2096,7 @@
             // 
             // tcbScaleMax
             // 
-            this.tcbScaleMax.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tcbScaleMax.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcbScaleMax.AutoSize = false;
             this.tcbScaleMax.Location = new System.Drawing.Point(131, 222);
@@ -2112,7 +2113,7 @@
             // 
             // tcbScaleMin
             // 
-            this.tcbScaleMin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tcbScaleMin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcbScaleMin.AutoSize = false;
             this.tcbScaleMin.LargeChange = 1;
@@ -2129,7 +2130,7 @@
             // 
             // tcbAngleExtent
             // 
-            this.tcbAngleExtent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tcbAngleExtent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcbAngleExtent.AutoSize = false;
             this.tcbAngleExtent.Location = new System.Drawing.Point(131, 164);
@@ -2145,7 +2146,7 @@
             // 
             // tcbAngleStart
             // 
-            this.tcbAngleStart.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tcbAngleStart.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcbAngleStart.AutoSize = false;
             this.tcbAngleStart.Location = new System.Drawing.Point(131, 134);
@@ -2162,7 +2163,7 @@
             // 
             // tcbNumLevels
             // 
-            this.tcbNumLevels.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tcbNumLevels.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcbNumLevels.AutoSize = false;
             this.tcbNumLevels.Location = new System.Drawing.Point(131, 105);
@@ -2175,7 +2176,7 @@
             // 
             // tcbMinContrast
             // 
-            this.tcbMinContrast.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tcbMinContrast.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcbMinContrast.AutoSize = false;
             this.tcbMinContrast.Location = new System.Drawing.Point(162, 307);
@@ -2232,7 +2233,7 @@
             // 
             // cmbOptimization
             // 
-            this.cmbOptimization.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.cmbOptimization.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbOptimization.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbOptimization.Items.AddRange(new object[] {
@@ -2339,7 +2340,7 @@
             // 
             // trackBar_Min_Size
             // 
-            this.trackBar_Min_Size.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.trackBar_Min_Size.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.trackBar_Min_Size.AutoSize = false;
             this.trackBar_Min_Size.Location = new System.Drawing.Point(131, 76);
@@ -2595,7 +2596,7 @@
             // 
             // tcbContrastHigh
             // 
-            this.tcbContrastHigh.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tcbContrastHigh.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcbContrastHigh.AutoSize = false;
             this.tcbContrastHigh.Location = new System.Drawing.Point(131, 47);
@@ -2612,7 +2613,7 @@
             // 
             // tcbContrastLow
             // 
-            this.tcbContrastLow.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tcbContrastLow.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcbContrastLow.AutoSize = false;
             this.tcbContrastLow.Location = new System.Drawing.Point(131, 17);
@@ -2789,8 +2790,8 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tbpCreateModel);
             this.tabControl1.Controls.Add(this.tbpFindModel);

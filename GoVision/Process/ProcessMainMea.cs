@@ -69,6 +69,7 @@ namespace GoVision
                 HDevelopExport.dev_display_shape_matching_results(ctl.GetHalconWindow(),
                     ProductMgr.GetInstance().Param.ModelID, "blue", row, column, angle, scale, scale, 0);
 
+                /*
                 if (result && ProductMgr.GetInstance().Param.IsSecondPos)
                 {
                     HTuple transRow, transColumn, transRadian;
@@ -83,6 +84,7 @@ namespace GoVision
 
                     //ctl.DisplayResults();
                 }
+                */
 
                 if (!result)
                 {
@@ -177,9 +179,11 @@ namespace GoVision
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                throw e;
+                //Log.Show($"{e}");
+                //return false;
             }
         }
 
@@ -187,30 +191,31 @@ namespace GoVision
         {
             try
             {
-                Task.Run(() =>
+                //Task.Run(() =>
+                //{
+                //string imageName = $"{DateTime.Now:HHmmss}.tiff";
+                string imageName = $"{DateTime.Now:HHmmss}.jpg";
+
+                string res = result ? "OK" : "NG";
+                string pathSource = $@"{ProductMgr.GetInstance().ProductPath}Images\{DateTime.Now:yyyyMMdd}\Robot\{res}\Source\";
+                //string pathWindow = $@"{ProductMgr.GetInstance().ProductPath}Images\{DateTime.Now:yyyyMMdd}\Robot\{res}\Window\";
+
+                if (!System.IO.Directory.Exists(pathSource))
                 {
-                    string imageName = $"{DateTime.Now:HHmmss}.tiff";
+                    System.IO.Directory.CreateDirectory(pathSource);
+                }
 
-                    string res = result ? "OK" : "NG";
-                    string pathSource = $@"{ProductMgr.GetInstance().ProductPath}Images\{DateTime.Now:yyyyMMdd}\{res}\Robot\Source\";
-                    string pathWindow = $@"{ProductMgr.GetInstance().ProductPath}Images\{DateTime.Now:yyyyMMdd}\{res}\Robot\Window\";
+                //if (!System.IO.Directory.Exists(pathWindow))
+                //{
+                //    System.IO.Directory.CreateDirectory(pathWindow);
+                //}
 
-                    if (!System.IO.Directory.Exists(pathSource))
-                    {
-                        System.IO.Directory.CreateDirectory(pathSource);
-                    }
+                string fileNameSource = $"{pathSource}{imageName}";
+                //string fileNameWindow = $"{pathWindow}{imageName}";
 
-                    if (!System.IO.Directory.Exists(pathWindow))
-                    {
-                        System.IO.Directory.CreateDirectory(pathWindow);
-                    }
-
-                    string fileNameSource = $"{pathSource}{imageName}";
-                    string fileNameWindow = $"{pathWindow}{imageName}";
-
-                    HDevelopExport.WriteImage(imgSrc, fileNameSource);
-                    HDevelopExport.DumpWindow(handle, fileNameWindow);
-                });
+                HDevelopExport.WriteImage(imgSrc, fileNameSource);
+                //HDevelopExport.DumpWindow(handle, fileNameWindow);
+                //});
             }
             catch (Exception)
             {
@@ -310,7 +315,7 @@ namespace GoVision
                 SaveParam();
             }
 
-            m_ExposureTime = IniTool.GetInt(fileName, "camera", "exposure", 0);
+            m_ExposureTime = IniTool.GetInt(fileName, "camera", "exposure", 1000);
 
             return true;
         }
